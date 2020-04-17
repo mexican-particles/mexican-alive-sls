@@ -1,3 +1,13 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# Webpack directories
+.webpack
+
 credentials
 
 # Created by .ignore support plugin (hsz.mobi)

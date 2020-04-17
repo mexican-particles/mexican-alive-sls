@@ -98,3 +98,38 @@ cf. https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-profile
 **注意： Credential 情報は、絶対にコミットに含めないこと**
 
 * ここで一旦コミット
+
+### 6. sls コマンドによる初期化を行う
+cf. https://serverless.com/framework/docs/providers/aws/cli-reference/create/
+cf. https://github.com/serverless/serverless/tree/master/lib/plugins/create/templates
+
+```bash
+(*'-')< $ docker-compose run dind sh -c "mkdir mexico && cd mexico && sls create --name mexico --template aws-nodejs-typescript"
+Serverless: Generating boilerplate...
+ _______                             __
+|   _   .-----.----.--.--.-----.----|  .-----.-----.-----.
+|   |___|  -__|   _|  |  |  -__|   _|  |  -__|__ --|__ --|
+|____   |_____|__|  \___/|_____|__| |__|_____|_____|_____|
+|   |   |             The Serverless Application Framework
+|       |                           serverless.com, v1.67.3
+ -------'
+
+Serverless: Successfully generated boilerplate for template: "aws-nodejs-typescript"
+t-kono@P325:~/repos/mexican-aliving-sls (master *)
+(*'-')< $ mv .gitignore mx && echo -e "$(cat mexico/.gitignore)\n\n$(cat mx)" > .gitignore && rm -f mx
+t-kono@P325:~/repos/mexican-aliving-sls (master *)
+(*'-')< $ mv mexico/vscode .
+t-kono@P325:~/repos/mexican-aliving-sls (master *)
+(*'-')< $ mv mexico/serverless.yml .
+t-kono@P325:~/repos/mexican-aliving-sls (master *)
+(*'-')< $ mv mexico/webpack.config.js .
+t-kono@P325:~/repos/mexican-aliving-sls (master *)
+(*'-')< $ mv mexico/handler.ts ./server/
+t-kono@P325:~/repos/mexican-aliving-sls (master *)
+```
+
+- よしなに `tsconfig.json` と `package.json` の設定をマージして `rm -rf mexico` する
+- handler.ts について lint が通るように微調整する
+- `make up && docker-compose run dind sls invoke local --function hello` でひとまずの疎通確認ができる
+
+* ここで一旦コミット
