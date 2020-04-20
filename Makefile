@@ -22,3 +22,7 @@ up: ## コンテナを立ち上げる
 		sleep 3;\
 	fi
 .PHONY: up
+
+offline: ## ローカルで SLS の実行環境を立ち上げる
+	make up
+	docker-compose exec dind sls offline -o 0.0.0.0 --printOutput

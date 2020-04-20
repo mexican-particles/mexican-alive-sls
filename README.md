@@ -133,3 +133,12 @@ t-kono@P325:~/repos/mexican-aliving-sls (master *)
 - `make up && docker-compose run dind sls invoke local --function hello` でひとまずの疎通確認ができる
 
 * ここで一旦コミット
+
+### 7. aws-serverless-express を導入して proxy させる
+- よしなに `handler.ts` を書く
+- `make offline` する
+- http://localhost:3000/dev にアクセスしてみる
+
+cf. https://logaretm.com/blog/2019-08-29-cost-effective-serverless-nuxt-js/
+
+firefox からアクセスすると `内容符号化 (Content-Encoding) に問題があります` と言われておしまいです
