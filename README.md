@@ -140,5 +140,3 @@ t-kono@P325:~/repos/mexican-aliving-sls (master *)
 - http://localhost:3000/dev にアクセスしてみる
 
 cf. https://logaretm.com/blog/2019-08-29-cost-effective-serverless-nuxt-js/
-
-firefox からアクセスすると `内容符号化 (Content-Encoding) に問題があります` と言われておしまいです

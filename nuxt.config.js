@@ -56,5 +56,11 @@ module.exports = {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     extend(config, ctx) {}
   },
-  srcDir: 'app/'
+  srcDir: 'app/',
+  render: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    compressor: (req, res, next) => {
+      next()
+    }
+  }
 }
