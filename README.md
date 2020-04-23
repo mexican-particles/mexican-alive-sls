@@ -140,3 +140,13 @@ t-kono@P325:~/repos/mexican-aliving-sls (master *)
 - http://localhost:3000/dev にアクセスしてみる
 
 cf. https://logaretm.com/blog/2019-08-29-cost-effective-serverless-nuxt-js/
+
+* ここで一旦コミット
+
+### 8. URL に付与される /stage/ を解決させる
+`/server.handler.ts` の解決部分は https://github.com/kai-kou/nuxt-serverless,  
+`/app/pages/**.vue` は https://github.com/tonyfromundefined/nuxt-serverless を参照している
+
+- http://localhost:3000/local にアクセスして、リンクに正しく遷移できることを確認する
+
+* ここで一旦コミット

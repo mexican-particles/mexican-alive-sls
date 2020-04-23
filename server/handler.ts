@@ -1,3 +1,4 @@
+import * as http from 'http'
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyHandler,
@@ -6,7 +7,11 @@ import {
 } from 'aws-lambda'
 import awsServerlessExpress from 'aws-serverless-express'
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware'
-import express from 'express'
+import express, { Express, Response, Request } from 'express'
+import load, { DotenvConfigOutput } from 'dotenv'
+import { Configuration } from '@nuxt/types'
+
+const dotenv: DotenvConfigOutput = load.config()
 
 /**
  * @param event
@@ -17,10 +22,10 @@ export const lambda: APIGatewayProxyHandler = async (
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   const { Nuxt } = require('nuxt-start')
-  const app = express()
+  const app: Express = express()
 
   // Import and Set Nuxt.js options
-  const config = require('../nuxt.config.js')
+  const config: Configuration = require('../nuxt.config.js')
 
   // In the Nuxt programmatic API
   // We need to explicitly set the dev to false.
@@ -29,10 +34,26 @@ export const lambda: APIGatewayProxyHandler = async (
   // wait for nuxt to be ready.
   await nuxt.ready()
 
+  if (dotenv!.parsed!.ENVIRONMENT === 'local') {
+    app.use((req: Request, res: Response): void => {
+      setTimeout((): void => {
+        req.url = `/${dotenv!.parsed!.ENVIRONMENT}/${req.url}`.replace(
+          '//',
+          '/'
+        )
+        nuxt.render(req, res)
+      }, 0)
+    })
+  }
+
   app.use(nuxt.render)
   app.use(awsServerlessExpressMiddleware.eventContext())
 
-  const server = awsServerlessExpress.createServer(app, () => null, ['*/*'])
+  const server: http.Server = awsServerlessExpress.createServer(
+    app,
+    () => null,
+    ['*/*']
+  )
 
   return await awsServerlessExpress.proxy(server, event, context, 'PROMISE')
     .promise

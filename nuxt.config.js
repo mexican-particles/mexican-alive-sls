@@ -1,3 +1,5 @@
+const dotenv = require('dotenv').config()
+
 module.exports = {
   mode: 'universal',
   /*
@@ -62,5 +64,8 @@ module.exports = {
     compressor: (req, res, next) => {
       next()
     }
+  },
+  router: {
+    base: dotenv.parsed.ENVIRONMENT === 'local' ? '/local/' : '/'
   }
 }
