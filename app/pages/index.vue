@@ -1,9 +1,11 @@
 <template>
-  <div class="page-index">
-    <h1>Nuxt Serverless Template {{ version }}</h1>
-    <p>{{ message }}</p>
-    <nuxt-link to="/typescript">typescript</nuxt-link>
-    <nuxt-link to="/nuxt">nuxt</nuxt-link>
+  <div class="container">
+    <div class="page-index">
+      <h1>Nuxt Serverless Template {{ version }}</h1>
+      <p>{{ message }}</p>
+      <nuxt-link to="/typescript">typescript</nuxt-link>
+      <nuxt-link to="/nuxt">nuxt</nuxt-link>
+    </div>
   </div>
 </template>
 
@@ -25,6 +27,7 @@ export default Vue.extend()
   justify-content: center;
   align-items: center;
   text-align: center;
+  background: url('~assets/img/1315629741.svg') no-repeat;
 }
 
 .title {
