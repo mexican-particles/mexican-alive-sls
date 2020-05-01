@@ -1,35 +1,128 @@
+# serverless.yml
 service:
   name: mexico
-# app and org for use with dashboard.serverless.com
-#app: your-app-name
-#org: your-org-name
 
-custom:
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
-  apigwBinary:
-    types:
-      - '*/*'
-
-# Add the serverless-webpack plugin
-plugins:
-  - serverless-webpack
-  - serverless-offline
-  - serverless-apigw-binary
+frameworkVersion: '>=1.0.0 <2.0.0'
 
 provider:
   name: aws
   runtime: nodejs12.x
+  # Set the default stage used. Default is dev
   stage: ${opt:stage, 'local'}
-  apiGateway:
-    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  # Overwrite the default region used. Default is us-east-1
+  region: ${opt:region, 'ap-northeast-1'}
+  # Service wide environment variables
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  # Optional API Gateway global config
+  apiGateway:
+    # Optional binary media types the API might return
+    binaryMediaTypes:
+      - '*/*'
+
+# Optional deployment packaging configuration
+package:
+  # Specify the directories and files which should be excluded in the deployment package
+  exclude:
+    - .DS_Store
+    - .babelrc
+    - .editorconfig
+    - .env.example
+    - .eslintcache
+    - .eslintrc.js
+    - .git/**
+    - .gitignore
+    - .idea/**
+    - .prettierrc
+    - .serverless/**
+    - Dockerfile
+    - LICENSE
+    - Makefile
+    - README.md
+    - app/**
+    - credentials
+    - credentials.example
+    - docker-compose.yml
+    - jest.config.js
+    - node_modules
+    - package-lock.json
+    - package.json
+    - server/**
+    - serverless.yml
+    - stylelint.config.js
+    - test/**
+    - tsconfig.json
+    - tsconfig.server.json
+    - vscode/**
+    - yarn-error.log
+    - yarn.lock
+  include:
+    - .env
+    - .nuxt/**
+    - dist/**
+    - nuxt.config.js
+  # Config if Serverless should automatically exclude dev dependencies in the deployment package. Defaults to true
+  excludeDevDependencies: true
+
+plugins:
+  - serverless-domain-manager
+  - serverless-dotenv-plugin
+  - serverless-apigw-binary
+  - serverless-layers
+  - serverless-offline
+
+custom:
+  name: '{self:service.name}'
+  # https://www.serverless.com/plugins/serverless-domain-manager/
+  customDomain:
+    domainName: '${self:provider.stage}.${env:DOMAIN}'
+    basePath: ''
+    stage: '${self:provider.stage}'
+    certificateName: '*.${env:DOMAIN}'
+    certificateArn: '${env:ACM_ARN}'
+    createRoute53Record: true
+    endpointType: 'edge'
+#     hostedZoneId:
+#     hostedZonePrivate:
+    enabled: true
+    securityPolicy: 'tls_1_2'
+  # https://github.com/agutoli/serverless-layers
+  serverless-layers:
+    compileDir: '.serverless'
+    layersDeploymentBucket: '${env:S3_BUCKET}'
+#    customInstallationCommand:
+    packageManager: yarn
+    dependenciesPath: ./package.json
+    compatibleRuntimes: ['nodejs12.x']
+  # https://www.serverless.com/plugins/serverless-apigw-binary/
+  apigwBinary:
+    types:
+      - '*/*'
+  # https://www.serverless.com/plugins/serverless-dotenv-plugin/
+  dotenv:
+    path: './.env'
+    basePath: './'
+  # https://github.com/dherault/serverless-offline
+  serverless-offline:
+    httpsProtocol: "dev-certs"
+    httpPort: 3000
 
 functions:
+  # A Function
   app:
-    handler: server/handler.lambda
+    # The file and module for this specific function.
+    handler: dist/server/handler.lambda
+    # The Events that trigger this Function
     events:
-      - http: ANY /
-      - http: ANY /{proxy+}
+      # This creates an API Gateway HTTP endpoint which can be used to trigger this function.  Learn more in "events/apigateway"
+      - http:
+          # Path for this endpoint
+          path: /
+          # HTTP method for this endpoint
+          method: ANY
+          # Turn on CORS for this endpoint, but don't forget to return the right header in your response
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true

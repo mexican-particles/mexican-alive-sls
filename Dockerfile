@@ -15,7 +15,7 @@ RUN apk add --no-cache tzdata && \
     apk del tzdata
 
 # https://classic.yarnpkg.com/en/docs/install/#alpine-stable
-RUN apk add --no-cache nodejs yarn && \
+RUN apk add --no-cache nodejs npm yarn && \
     yarn global add serverless
 
 RUN mkdir /root/.aws

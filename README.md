@@ -150,3 +150,56 @@ cf. https://logaretm.com/blog/2019-08-29-cost-effective-serverless-nuxt-js/
 - http://localhost:3000/local にアクセスして、リンクに正しく遷移できることを確認する
 
 * ここで一旦コミット
+
+### 9. カスタムドメインを利用してデプロイする
+
+#### Route 53 でのドメイン取得
+ドメインは `.env` の `DOMAIN` に代入しておく
+
+### S3 でのバケット作成
+バケット名は `.env` の `S3_BUCKET` に代入しておく
+
+#### IAM でのポリシー追加
+
+https://github.com/amplify-education/serverless-domain-manager を参考に、  
+上述したものと重複しない権限についてポリシーを作成してアタッチする
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "route53:GetHostedZone",
+                "route53:ListHostedZones",
+                "route53:ListResourceRecordSets",
+                "acm:ListCertificates",
+                "cloudfront:UpdateDistribution"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "route53:ChangeResourceRecordSets",
+            "Resource": "arn:aws:route53:::hostedzone/{HostedZoneId}"
+        }
+    ]
+}
+```
+{HostedZoneId} は Route 53 から対象のドメインのホストゾーン ID を参照して置換しておく
+
+また、 https://github.com/agutoli/serverless-layers を参考に、  
+上述したものと重複しない権限についてポリシーを作成してアタッチする  
+`"arn:aws:s3:::{backetName}"` には先述で S3 に作成したバケット名に置換しておく
+
+#### ACM での証明書発行
+https://www.serverless.com/blog/serverless-api-gateway-domain/ にあるように `us-east-1` リージョンで対象の証明書を発行すること  
+発行した証明書の arn は `.env` の `ACM_ARN` に代入しておく（本来は optional な設定だがここでは必須にしている
+
+
+#### SLS コマンドによるドメインの作成とデプロイ
+`dc run dind sls create_domain --stage dev`  
+`dc run dind sls deploy --stage dev`
